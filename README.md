@@ -12,7 +12,7 @@ PhishyLens is a personal project inspired by VirusTotal: which is a lens that an
 </p>
 
 
-<img width="1280" height="720" alt="Untitled design" src="https://github.com/user-attachments/assets/26074433-95f3-407a-a95a-2537b17f2c64" />
+<img width="1280" height="720" alt="Untitled design" src="https://github.com/user-attachments/assets/066ebf7f-7242-4476-918a-c7d013d9f319" />
 
 
 ## Features
