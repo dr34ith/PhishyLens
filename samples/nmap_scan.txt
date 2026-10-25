@@ -1,0 +1,10 @@
+Nmap scan report for target.local (10.10.10.5)
+PORT     STATE SERVICE     VERSION
+21/tcp   open  ftp         vsftpd 2.3.4
+|_ftp-anon: Anonymous FTP login allowed
+22/tcp   open  ssh         OpenSSH 4.7p1 Debian 8ubuntu1
+139/tcp  open  netbios-ssn Samba smbd 3.0.20
+445/tcp  open  netbios-ssn Samba smbd 3.0.20
+3389/tcp open  ms-wbt-server
+4444/tcp open  krb524?
+OS details: Linux 2.6.9 - 2.6.33

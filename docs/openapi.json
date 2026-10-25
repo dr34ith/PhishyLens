@@ -1,0 +1,1069 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PhishyLens API",
+    "version": "3.0.0",
+    "description": "Threat intel & digital forensics workbench. Errors: {error, request_id}. Optional header X-API-Key when PHISHYLENS_API_KEY + REQUIRE_API_KEY=1 are set."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Liveness probe",
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        }
+      }
+    },
+    "/api/system/status": {
+      "get": {
+        "summary": "Uptime, config flags, external-API health",
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        }
+      }
+    },
+    "/api/system/logs": {
+      "get": {
+        "summary": "Recent internal log records",
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/system/errors": {
+      "get": {
+        "summary": "Recent errors / failed API calls (bug tracker)",
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/analyze/url": {
+      "post": {
+        "summary": "Analyze a URL (heuristics + intel + redirect trace)",
+        "tags": [
+          "Analyze"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "url": "http://bit.ly/3example"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze/redirects": {
+      "post": {
+        "summary": "Trace HTTP 301/302 redirect chain only",
+        "tags": [
+          "Analyze"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "url": "http://bit.ly/3example"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze/email": {
+      "post": {
+        "summary": "Analyze raw email (JSON) or .eml upload (multipart field 'file')",
+        "tags": [
+          "Analyze"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "raw": "From: \"PayPal Support\" <support@paypa1-secure.xyz>\\nReturn-Path: <bounce@mailer.badhost.ru>\\nReply-To: help@gmail-support.top\\nX-Originating-IP: [185.220.101.4]\\nAuthentication-Results: mx.example.com; spf=fail smtp.mailfrom=badhost.ru; dkim=none; dmarc=fail\\nSubject: URGENT: verify your account\\n\\nYour account will be suspended. Click http://paypa1-secure.xyz/login now"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze/email/upload": {
+      "post": {
+        "summary": "Analyze an uploaded .eml file (multipart field 'file')",
+        "tags": [
+          "Analyze"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze/hash": {
+      "post": {
+        "summary": "Analyze MD5/SHA1/SHA256",
+        "tags": [
+          "Analyze"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "hash": "44d88612fea8a8f36de82e1278abb02f"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze/ip": {
+      "post": {
+        "summary": "Reputation of an IP address",
+        "tags": [
+          "Analyze"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "ip": "185.220.101.4"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze/logs": {
+      "post": {
+        "summary": "Detect SQLi/XSS/PowerShell/brute force in logs (JSON {logs} or multipart 'file')",
+        "tags": [
+          "Analyze"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "logs": "10.0.0.5 - - [10/Oct/2026:13:55:36 +0000] \\\"GET /item?id=1' UNION SELECT user,pass FROM users-- HTTP/1.1\\\" 200 512 \\\"-\\\" \\\"sqlmap/1.7\\\""
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analyze/network": {
+      "post": {
+        "summary": "Triage Nmap / Wireshark text exports (JSON {data} or multipart 'file')",
+        "tags": [
+          "Analyze"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "data": "Nmap scan report for 10.10.10.5\\nPORT   STATE SERVICE VERSION\\n21/tcp open  ftp     vsftpd 2.3.4\\n445/tcp open  microsoft-ds Samba 3.0.20"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/enrich": {
+      "post": {
+        "summary": "Enrich IPs / hashes with VirusTotal + AbuseIPDB",
+        "tags": [
+          "Intel"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "ips": [
+                  "185.220.101.4"
+                ],
+                "hashes": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/case/{case_id}": {
+      "get": {
+        "summary": "Fetch a saved case",
+        "tags": [
+          "Cases"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/cases/stats": {
+      "get": {
+        "summary": "Case statistics",
+        "tags": [
+          "Cases"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        }
+      }
+    },
+    "/api/cases/recent": {
+      "get": {
+        "summary": "Recent cases",
+        "tags": [
+          "Cases"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/cases/search": {
+      "get": {
+        "summary": "Search cases",
+        "tags": [
+          "Cases"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "verdict",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/tools/decode": {
+      "post": {
+        "summary": "Decode Base64/Hex/URL/ROT13",
+        "tags": [
+          "Tools"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "text": "SGVsbG8gV29ybGQ="
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/extract": {
+      "post": {
+        "summary": "Extract IOCs from text",
+        "tags": [
+          "Tools"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "text": "Visit http://evil.example.com from 8.8.8.8"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/flagscan": {
+      "post": {
+        "summary": "Find CTF flags in text",
+        "tags": [
+          "Tools"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "text": "flag{example_flag}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/hashcrack": {
+      "post": {
+        "summary": "Reverse a hash via public DB",
+        "tags": [
+          "Tools"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "hash": "5f4dcc3b5aa765d61d8327deb882cf99"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/analyze": {
+      "post": {
+        "summary": "LLM narrative (falls back to local explanation)",
+        "tags": [
+          "AI"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "mode": "url",
+                "input": "http://evil.example.com",
+                "findings": [],
+                "verdict": "SUSPICIOUS",
+                "score": 50
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sigma": {
+      "post": {
+        "summary": "Generate Sigma rule(s) (YAML) from one finding {finding} or many {findings}; 422 for unsupported finding types",
+        "tags": [
+          "Detection"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success: {rules: [{finding, title, id, yaml, rules}], skipped: [{finding, reason}], yaml}",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "skipped": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "yaml": {
+                      "type": "string",
+                      "description": "All rules as multi-document Sigma YAML"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          },
+          "422": {
+            "description": "No Sigma template for the finding type(s): {error, supported[], request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "finding": {
+                  "name": "SSH / Login Brute Force",
+                  "severity": "HIGH",
+                  "evidence": "203.0.113.50: 12 failed logins (2 distinct user(s): admin, root)",
+                  "false_positive_possibility": "Low\u2013Medium.",
+                  "confidence": 80
+                },
+                "mode": "logs"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/summary": {
+      "post": {
+        "summary": "Upgrade a stored result: short Executive Summary (rebuilt if missing) + detailed 'Show details' blocks",
+        "tags": [
+          "Reporting"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success: {exec_summary: {headline, what_happened[], why_it_matters, do_now[], key_facts[], highlights[], story[{section, title, sentences[{text, ref, certainty: observed|inferred|unknown}]}]}, details: {version, blocks[overview, actors_and_targets, assessment, attack_story, confidence_and_limits, next_steps, mode_extras], coverage[], glossary[], visible_words, word_budget}}",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "exec_summary": {
+                      "type": "object"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "result": {
+                  "verdict": "MALICIOUS",
+                  "score": 88,
+                  "mode": "logs",
+                  "input": "12 log lines (syslog)",
+                  "summary": "Example result.",
+                  "recommended_action": "Block the source and enforce MFA.",
+                  "findings": [
+                    {
+                      "name": "SSH / Login Brute Force",
+                      "severity": "HIGH",
+                      "evidence": "203.0.113.50: 12 failed logins (2 distinct user(s): admin, root)",
+                      "false_positive_possibility": "Low\u2013Medium.",
+                      "confidence": 80
+                    }
+                  ],
+                  "iocs": {
+                    "ips": [
+                      "203.0.113.50"
+                    ],
+                    "urls": [],
+                    "emails": [],
+                    "domains": [],
+                    "hashes": []
+                  }
+                },
+                "defang": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/diagram": {
+      "post": {
+        "summary": "Attack diagram (pure SVG + Mermaid) and kill-chain SVG built only from an analysis result",
+        "tags": [
+          "Reporting"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success: {type, title, nodes[], edges[], svg, mermaid, killchain_svg, grouped[]}; type 'none' when the result has nothing to draw",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "nodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "edges": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "svg": {
+                      "type": "string"
+                    },
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "killchain_svg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "result": {
+                  "verdict": "MALICIOUS",
+                  "score": 90,
+                  "mode": "network",
+                  "input": "0 host(s), 0 open port(s), 26 packet(s)",
+                  "findings": [
+                    {
+                      "name": "TCP Port Scan Detected",
+                      "severity": "HIGH",
+                      "evidence": "10.0.0.99 \u2192 10.10.10.5: SYN to 25 distinct ports (e.g. [1000, 1001])"
+                    },
+                    {
+                      "name": "Traffic to Suspicious Port",
+                      "severity": "HIGH",
+                      "evidence": "10.10.10.5 \u2192 10.0.0.77:4444 (1 packets)"
+                    }
+                  ],
+                  "iocs": {
+                    "ips": [
+                      "10.0.0.99"
+                    ]
+                  }
+                },
+                "theme": "dark",
+                "defang": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/report": {
+      "post": {
+        "summary": "Markdown (format=md) or print-ready HTML (format=html) write-up built only from an analysis result",
+        "tags": [
+          "Reporting"
+        ],
+        "responses": {
+          "200": {
+            "description": "The write-up as an attachment (Content-Disposition). IOC table always defanged; other text defanged when defang=true.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request: {error, request_id}"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Internal error: {error, request_id}"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "result": {
+                  "verdict": "MALICIOUS",
+                  "score": 88,
+                  "mode": "logs",
+                  "input": "12 log lines (syslog)",
+                  "summary": "Example result.",
+                  "recommended_action": "Block the source and enforce MFA.",
+                  "findings": [
+                    {
+                      "name": "SSH / Login Brute Force",
+                      "severity": "HIGH",
+                      "evidence": "203.0.113.50: 12 failed logins (2 distinct user(s): admin, root)",
+                      "false_positive_possibility": "Low\u2013Medium.",
+                      "confidence": 80
+                    }
+                  ],
+                  "iocs": {
+                    "ips": [
+                      "203.0.113.50"
+                    ],
+                    "urls": [],
+                    "emails": [],
+                    "domains": [],
+                    "hashes": []
+                  }
+                },
+                "format": "md",
+                "defang": true,
+                "include_sigma": true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

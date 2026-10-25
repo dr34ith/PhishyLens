@@ -1,0 +1,1127 @@
+{
+  "info": {
+    "name": "PhishyLens API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "apiKey",
+      "value": ""
+    },
+    {
+      "key": "caseId",
+      "value": "CASE-2026-00001"
+    }
+  ],
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "GET /api/health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            }
+          },
+          "description": "Liveness probe"
+        },
+        {
+          "name": "GET /api/system/status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/system/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "system",
+                "status"
+              ]
+            }
+          },
+          "description": "Uptime, config flags, external-API health"
+        },
+        {
+          "name": "GET /api/system/logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/system/logs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "system",
+                "logs"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                },
+                {
+                  "key": "level",
+                  "value": "ERROR"
+                }
+              ]
+            }
+          },
+          "description": "Recent internal log records"
+        },
+        {
+          "name": "GET /api/system/errors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/system/errors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "system",
+                "errors"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "description": "Recent errors / failed API calls (bug tracker)"
+        }
+      ]
+    },
+    {
+      "name": "Analyze",
+      "item": [
+        {
+          "name": "POST /api/analyze/url",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze/url",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analyze",
+                "url"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"http://bit.ly/3example\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Analyze a URL (heuristics + intel + redirect trace)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has result', () => pm.expect(pm.response.json()).to.have.property('result'));",
+                  "pm.test('score 0-100', () => { const s = pm.response.json().result.score; pm.expect(s).to.be.within(0,100); });",
+                  "pm.test('verdict valid', () => pm.expect(['BENIGN','SUSPICIOUS','MALICIOUS']).to.include(pm.response.json().result.verdict));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/analyze/redirects",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze/redirects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analyze",
+                "redirects"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"http://bit.ly/3example\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Trace HTTP 301/302 redirect chain only",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has result', () => pm.expect(pm.response.json()).to.have.property('result'));",
+                  "pm.test('score 0-100', () => { const s = pm.response.json().result.score; pm.expect(s).to.be.within(0,100); });",
+                  "pm.test('verdict valid', () => pm.expect(['BENIGN','SUSPICIOUS','MALICIOUS']).to.include(pm.response.json().result.verdict));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/analyze/email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze/email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analyze",
+                "email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"raw\": \"From: \\\"PayPal Support\\\" <support@paypa1-secure.xyz>\\\\nReturn-Path: <bounce@mailer.badhost.ru>\\\\nReply-To: help@gmail-support.top\\\\nX-Originating-IP: [185.220.101.4]\\\\nAuthentication-Results: mx.example.com; spf=fail smtp.mailfrom=badhost.ru; dkim=none; dmarc=fail\\\\nSubject: URGENT: verify your account\\\\n\\\\nYour account will be suspended. Click http://paypa1-secure.xyz/login now\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Analyze raw email (JSON) or .eml upload (multipart field 'file')",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has result', () => pm.expect(pm.response.json()).to.have.property('result'));",
+                  "pm.test('score 0-100', () => { const s = pm.response.json().result.score; pm.expect(s).to.be.within(0,100); });",
+                  "pm.test('verdict valid', () => pm.expect(['BENIGN','SUSPICIOUS','MALICIOUS']).to.include(pm.response.json().result.verdict));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/analyze/email/upload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze/email/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analyze",
+                "email",
+                "upload"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file"
+                }
+              ]
+            }
+          },
+          "description": "Analyze an uploaded .eml file (multipart field 'file')"
+        },
+        {
+          "name": "POST /api/analyze/hash",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze/hash",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analyze",
+                "hash"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hash\": \"44d88612fea8a8f36de82e1278abb02f\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Analyze MD5/SHA1/SHA256",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has result', () => pm.expect(pm.response.json()).to.have.property('result'));",
+                  "pm.test('score 0-100', () => { const s = pm.response.json().result.score; pm.expect(s).to.be.within(0,100); });",
+                  "pm.test('verdict valid', () => pm.expect(['BENIGN','SUSPICIOUS','MALICIOUS']).to.include(pm.response.json().result.verdict));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/analyze/ip",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze/ip",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analyze",
+                "ip"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ip\": \"185.220.101.4\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Reputation of an IP address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has result', () => pm.expect(pm.response.json()).to.have.property('result'));",
+                  "pm.test('score 0-100', () => { const s = pm.response.json().result.score; pm.expect(s).to.be.within(0,100); });",
+                  "pm.test('verdict valid', () => pm.expect(['BENIGN','SUSPICIOUS','MALICIOUS']).to.include(pm.response.json().result.verdict));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/analyze/logs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze/logs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analyze",
+                "logs"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"logs\": \"10.0.0.5 - - [10/Oct/2026:13:55:36 +0000] \\\\\\\"GET /item?id=1' UNION SELECT user,pass FROM users-- HTTP/1.1\\\\\\\" 200 512 \\\\\\\"-\\\\\\\" \\\\\\\"sqlmap/1.7\\\\\\\"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Detect SQLi/XSS/PowerShell/brute force in logs (JSON {logs} or multipart 'file')",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has result', () => pm.expect(pm.response.json()).to.have.property('result'));",
+                  "pm.test('score 0-100', () => { const s = pm.response.json().result.score; pm.expect(s).to.be.within(0,100); });",
+                  "pm.test('verdict valid', () => pm.expect(['BENIGN','SUSPICIOUS','MALICIOUS']).to.include(pm.response.json().result.verdict));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/analyze/network",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze/network",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analyze",
+                "network"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"Nmap scan report for 10.10.10.5\\\\nPORT   STATE SERVICE VERSION\\\\n21/tcp open  ftp     vsftpd 2.3.4\\\\n445/tcp open  microsoft-ds Samba 3.0.20\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Triage Nmap / Wireshark text exports (JSON {data} or multipart 'file')",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has result', () => pm.expect(pm.response.json()).to.have.property('result'));",
+                  "pm.test('score 0-100', () => { const s = pm.response.json().result.score; pm.expect(s).to.be.within(0,100); });",
+                  "pm.test('verdict valid', () => pm.expect(['BENIGN','SUSPICIOUS','MALICIOUS']).to.include(pm.response.json().result.verdict));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Intel",
+      "item": [
+        {
+          "name": "POST /api/enrich",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrich",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enrich"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ips\": [\n    \"185.220.101.4\"\n  ],\n  \"hashes\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Enrich IPs / hashes with VirusTotal + AbuseIPDB"
+        }
+      ]
+    },
+    {
+      "name": "Cases",
+      "item": [
+        {
+          "name": "GET /api/case/{case_id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/case/{{caseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "case",
+                "{{caseId}}"
+              ]
+            }
+          },
+          "description": "Fetch a saved case"
+        },
+        {
+          "name": "GET /api/cases/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cases/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cases",
+                "stats"
+              ]
+            }
+          },
+          "description": "Case statistics"
+        },
+        {
+          "name": "GET /api/cases/recent",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cases/recent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cases",
+                "recent"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "description": "Recent cases"
+        },
+        {
+          "name": "GET /api/cases/search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cases/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cases",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": ""
+                },
+                {
+                  "key": "type",
+                  "value": "url"
+                },
+                {
+                  "key": "verdict",
+                  "value": "MALICIOUS"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "description": "Search cases"
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "item": [
+        {
+          "name": "POST /api/tools/decode",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tools/decode",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tools",
+                "decode"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"SGVsbG8gV29ybGQ=\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Decode Base64/Hex/URL/ROT13"
+        },
+        {
+          "name": "POST /api/tools/extract",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tools/extract",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tools",
+                "extract"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Visit http://evil.example.com from 8.8.8.8\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Extract IOCs from text"
+        },
+        {
+          "name": "POST /api/tools/flagscan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tools/flagscan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tools",
+                "flagscan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"flag{example_flag}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Find CTF flags in text"
+        },
+        {
+          "name": "POST /api/tools/hashcrack",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tools/hashcrack",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tools",
+                "hashcrack"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hash\": \"5f4dcc3b5aa765d61d8327deb882cf99\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Reverse a hash via public DB"
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "POST /api/ai/analyze",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/analyze",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "analyze"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mode\": \"url\",\n  \"input\": \"http://evil.example.com\",\n  \"findings\": [],\n  \"verdict\": \"SUSPICIOUS\",\n  \"score\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "LLM narrative (falls back to local explanation)"
+        }
+      ]
+    },
+    {
+      "name": "Detection",
+      "item": [
+        {
+          "name": "POST /api/sigma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sigma",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sigma"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"finding\": {\n    \"name\": \"SSH / Login Brute Force\",\n    \"severity\": \"HIGH\",\n    \"evidence\": \"203.0.113.50: 12 failed logins (2 distinct user(s): admin, root)\",\n    \"false_positive_possibility\": \"Low\\u2013Medium.\",\n    \"confidence\": 80\n  },\n  \"mode\": \"logs\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Generate Sigma rule(s) (YAML) from one finding {finding} or many {findings}; 422 for unsupported finding types",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has rules', () => pm.expect(pm.response.json().rules).to.be.an('array').that.is.not.empty);",
+                  "pm.test('rule is experimental YAML', () => pm.expect(pm.response.json().yaml).to.include('status: experimental'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reporting",
+      "item": [
+        {
+          "name": "POST /api/summary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "summary"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"result\": {\n    \"verdict\": \"MALICIOUS\",\n    \"score\": 88,\n    \"mode\": \"logs\",\n    \"input\": \"12 log lines (syslog)\",\n    \"summary\": \"Example result.\",\n    \"recommended_action\": \"Block the source and enforce MFA.\",\n    \"findings\": [\n      {\n        \"name\": \"SSH / Login Brute Force\",\n        \"severity\": \"HIGH\",\n        \"evidence\": \"203.0.113.50: 12 failed logins (2 distinct user(s): admin, root)\",\n        \"false_positive_possibility\": \"Low\\u2013Medium.\",\n        \"confidence\": 80\n      }\n    ],\n    \"iocs\": {\n      \"ips\": [\n        \"203.0.113.50\"\n      ],\n      \"urls\": [],\n      \"emails\": [],\n      \"domains\": [],\n      \"hashes\": []\n    }\n  },\n  \"defang\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Upgrade a stored result: short Executive Summary (rebuilt if missing) + detailed 'Show details' blocks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has details blocks', () => pm.expect(pm.response.json().details.blocks).to.be.an('array'));",
+                  "pm.test('has coverage', () => pm.expect(pm.response.json().details.coverage).to.be.an('array').that.is.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/diagram",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/diagram",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "diagram"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"result\": {\n    \"verdict\": \"MALICIOUS\",\n    \"score\": 90,\n    \"mode\": \"network\",\n    \"input\": \"0 host(s), 0 open port(s), 26 packet(s)\",\n    \"findings\": [\n      {\n        \"name\": \"TCP Port Scan Detected\",\n        \"severity\": \"HIGH\",\n        \"evidence\": \"10.0.0.99 \\u2192 10.10.10.5: SYN to 25 distinct ports (e.g. [1000, 1001])\"\n      },\n      {\n        \"name\": \"Traffic to Suspicious Port\",\n        \"severity\": \"HIGH\",\n        \"evidence\": \"10.10.10.5 \\u2192 10.0.0.77:4444 (1 packets)\"\n      }\n    ],\n    \"iocs\": {\n      \"ips\": [\n        \"10.0.0.99\"\n      ]\n    }\n  },\n  \"theme\": \"dark\",\n  \"defang\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Attack diagram (pure SVG + Mermaid) and kill-chain SVG built only from an analysis result",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('has svg', () => pm.expect(pm.response.json().svg).to.include('<svg'));",
+                  "pm.test('nodes capped at 20', () => pm.expect(pm.response.json().nodes.length).to.be.at.most(20));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/report",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "report"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"result\": {\n    \"verdict\": \"MALICIOUS\",\n    \"score\": 88,\n    \"mode\": \"logs\",\n    \"input\": \"12 log lines (syslog)\",\n    \"summary\": \"Example result.\",\n    \"recommended_action\": \"Block the source and enforce MFA.\",\n    \"findings\": [\n      {\n        \"name\": \"SSH / Login Brute Force\",\n        \"severity\": \"HIGH\",\n        \"evidence\": \"203.0.113.50: 12 failed logins (2 distinct user(s): admin, root)\",\n        \"false_positive_possibility\": \"Low\\u2013Medium.\",\n        \"confidence\": 80\n      }\n    ],\n    \"iocs\": {\n      \"ips\": [\n        \"203.0.113.50\"\n      ],\n      \"urls\": [],\n      \"emails\": [],\n      \"domains\": [],\n      \"hashes\": []\n    }\n  },\n  \"format\": \"md\",\n  \"defang\": true,\n  \"include_sigma\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "description": "Markdown (format=md) or print-ready HTML (format=html) write-up built only from an analysis result",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('markdown attachment', () => pm.expect(pm.response.headers.get('Content-Disposition')).to.include('attachment'));",
+                  "pm.test('has title', () => pm.expect(pm.response.text()).to.include('# PhishyLens Write-up'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

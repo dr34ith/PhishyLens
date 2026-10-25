@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishyLens</title>
+  <meta name="theme-color" content="#0d1117">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="500x500" href="/static/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/display.js"></script>
+</head>
+<body>
+<div class="app-shell">
+
+ <!-- ─── TOPBAR ─────────────────────────────────────── -->
+<style>
+  .glitch {
+    position: relative;
+    display: inline-block;
+  }
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+  .glitch::before {
+    color: #ff7a3d;
+    animation: glitch-top 2.5s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+  }
+  .glitch::after {
+    color: #3fc1b9;
+    animation: glitch-bot 2.5s infinite;
+    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+  }
+  @keyframes glitch-top {
+    0%,80%,100%  { transform: translate(0); opacity: 0; }
+    82%          { transform: translate(-2px, -1px); opacity: 1; }
+    84%          { transform: translate(2px,  1px); opacity: 1; }
+    86%          { transform: translate(0); opacity: 0; }
+  }
+  @keyframes glitch-bot {
+    0%,83%,100%  { transform: translate(0); opacity: 0; }
+    85%          { transform: translate(2px, 1px); opacity: 1; }
+    87%          { transform: translate(-2px,-1px); opacity: 1; }
+    89%          { transform: translate(0); opacity: 0; }
+  }
+
+  .glitch-fish {
+    display: inline-block;
+    animation: fish-shake 4s infinite;
+  }
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  @keyframes fish-shake {
+    0%,90%,100% { transform: translate(0) skewX(0deg); filter: none; }
+    92%         { transform: translate(-2px, 0) skewX(-5deg); filter: hue-rotate(90deg); }
+    94%         { transform: translate(2px, 0) skewX(5deg);  filter: hue-rotate(180deg); }
+    96%         { transform: translate(-1px,0) skewX(0deg);  filter: hue-rotate(270deg); }
+    98%         { transform: translate(0); filter: none; }
+  }
+
+  .dreaith-glitch {
+    position: relative;
+    display: inline-block;
+    letter-spacing: 2px;
+    font-family: var(--mono);
+    font-size:var(--fs-xs);
+    color: var(--text3);
+    animation: dreaith-flicker 5s infinite;
+  }
+  @keyframes dreaith-flicker {
+    0%,88%,100% { opacity: 1; text-shadow: none; }
+    90%         { opacity: .4; text-shadow: 2px 0 #ff7a3d, -2px 0 #3fc1b9; }
+    92%         { opacity: 1; text-shadow: -1px 0 #3fc1b9; }
+    94%         { opacity: .6; text-shadow: 1px 0 #ff7a3d; }
+    96%         { opacity: 1; text-shadow: none; }
+  }
+</style>
+
+<header class="topbar">
+  <div class="topbar-brand">
+    <img class="glitch-fish brand-logo" src="/static/apple-touch-icon.png" alt="PhishyLens logo" width="28" height="28">
+    <span class="glitch" data-text="PhishyLens" style="font-weight:700;letter-spacing:-.3px;">PhishyLens</span>
+  </div>
+
+  <div class="topbar-right">
+    <div class="ui-controls">
+      <button type="button" class="ui-btn" id="js-display-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="js-display-pop" title="Reading comfort and theme">
+        <span aria-hidden="true">Aa</span><span class="ui-btn-text">Display</span>
+      </button>
+      <button type="button" class="ui-btn" id="js-legend-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="js-legend-pop" title="What the highlight colours mean">
+        <span aria-hidden="true">◐</span><span class="ui-btn-text">Legend</span>
+      </button>
+    </div>
+    <div class="ui-pop" id="js-display-pop" role="dialog" aria-label="Display settings" hidden>
+      <h3>Reading comfort</h3>
+      <div class="seg" role="group" aria-label="Reading comfort">
+        <button type="button" data-set-comfort="compact" aria-pressed="false">Compact</button>
+        <button type="button" data-set-comfort="comfortable" aria-pressed="true">Comfortable</button>
+        <button type="button" data-set-comfort="large" aria-pressed="false">Large text</button>
+      </div>
+      <h3>Theme</h3>
+      <div class="seg" role="group" aria-label="Theme">
+        <button type="button" data-set-theme="dark" aria-pressed="true">Dark</button>
+        <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
+      </div>
+    </div>
+    <div class="ui-pop" id="js-legend-pop" role="dialog" aria-label="Highlight legend" hidden>
+      <h3>Severity</h3>
+      <ul class="legend-list">
+        <li><span class="hl hl-sev-critical">CRITICAL</span> Act immediately</li>
+        <li><span class="hl hl-sev-high">HIGH</span> Act today</li>
+        <li><span class="hl hl-sev-medium">MEDIUM</span> Investigate</li>
+        <li><span class="hl hl-sev-low">LOW</span> Informational</li>
+        <li><span class="hl hl-sev-benign">BENIGN</span> No threat found</li>
+      </ul>
+      <h3>Technical values</h3>
+      <ul class="legend-list">
+        <li><span class="hl hl-ip">10.0.0.5</span> IP address / host</li>
+        <li><span class="hl hl-domain">example.com</span> Domain or e-mail</li>
+        <li><span class="hl hl-url">hxxp://site/x</span> URL</li>
+        <li><span class="hl hl-hash">d41d8cd9…</span> File hash</li>
+        <li><span class="hl hl-mitre">T1110</span> MITRE ATT&amp;CK / CVE</li>
+        <li><span class="hl hl-cmd">powershell</span> Command / payload</li>
+        <li><span class="hl hl-secret">********</span> Masked secret</li>
+        <li><span class="hl hl-num">97%</span> Key number</li>
+        <li><mark class="hl-match">union select</mark> Matched part of a log line</li>
+      </ul>
+    </div>
+    <label class="defang-toggle" title="Show URLs, domains, IPs and e-mail addresses defanged (hxxp://, evil[.]com) in results, copied text and exports. API data is never changed.">
+      <input type="checkbox" id="js-defang-toggle" checked>
+      <span class="defang-switch" aria-hidden="true"></span>
+      <span class="defang-text">Defang IOCs</span>
+    </label>
+    <span class="dreaith-glitch">Dreaith</span>
+  </div>
+</header>
+
+  <!-- ─── SIDEBAR ─────────────────────────────────────── -->
+  <aside class="sidebar">
+    <nav class="sidebar-nav">
+      <span class="nav-label">Analysis</span>
+      <button class="nav-item active" id="nav-main" onclick="showMainView(this)">
+        <span class="nav-icon"></span> New Analysis
+      </button>
+
+      <span class="nav-label">Workspace</span>
+      <button class="nav-item" id="nav-stats" onclick="showStats(this)">
+        <span class="nav-icon"></span> Statistics
+        <span class="nav-badge" id="js-total-count">0</span>
+      </button>
+      <button class="nav-item" id="nav-system" onclick="showSystem(this)">
+        <span class="nav-icon"></span> System Health
+      </button>
+    </nav>
+
+    <div class="sidebar-history">
+      <div class="history-header">
+        <span class="history-title">Scan History</span>
+      </div>
+      <input class="history-search" type="text" placeholder="Search history..." id="js-history-search" oninput="filterHistory(this.value)">
+      <div class="history-list" id="js-history-list">
+        <div style="font-size:var(--fs-xs);color:var(--text3);padding:8px 4px;">No scans yet.</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Analysis Form -->
+    <div class="analysis-form">
+      <div class="form-header">
+        <span style="font-size:var(--fs-md)"></span>
+        <span class="form-title">Start Analysis</span>
+        <span class="form-subtitle" id="js-scan-id-label"></span>
+      </div>
+
+      <div class="analysis-tabs">
+        <button class="tab-btn active" onclick="switchTab('url',this)"> URL</button>
+        <button class="tab-btn" onclick="switchTab('email',this)"> Email</button>
+        <button class="tab-btn" onclick="switchTab('hash',this)"> Hash</button>
+        <button class="tab-btn" onclick="switchTab('ip',this)"> IP Address</button>
+        <button class="tab-btn" onclick="switchTab('logs',this)"> Logs</button>
+        <button class="tab-btn" onclick="switchTab('network',this)"> Network</button>
+      </div>
+
+      <div id="tab-url" class="tab-panel active">
+        <div class="input-row">
+          <input class="input-field" type="text" id="url-input" placeholder="https://suspicious-site.example.com" />
+          <button class="btn-analyze" id="url-btn" onclick="runAnalysis('url')">
+            <span class="btn-text">Analyze</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="tab-email" class="tab-panel">
+        <div class="input-row">
+          <textarea class="input-field" id="email-input" placeholder="Paste raw email headers and body here..."></textarea>
+          <button class="btn-analyze" id="email-btn" onclick="runAnalysis('email')">
+            <span class="btn-text">Analyze</span>
+          </button>
+        </div>
+        <div class="file-row">
+          <label class="file-pick">📎 Upload .eml file
+            <input type="file" id="email-file" accept=".eml,.txt,message/rfc822" onchange="runEmailFile(this)" hidden>
+          </label>
+          <span class="file-hint">Extracts Return-Path, X-Originating-IP, Received chain, SPF/DKIM/DMARC, attachments + hashes.</span>
+        </div>
+      </div>
+
+      <div id="tab-hash" class="tab-panel">
+        <div class="input-row">
+          <input class="input-field" type="text" id="hash-input" placeholder="MD5, SHA-1, or SHA-256 hash" />
+          <button class="btn-analyze" id="hash-btn" onclick="runAnalysis('hash')">
+            <span class="btn-text">Analyze</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="tab-ip" class="tab-panel">
+        <div class="input-row">
+          <input class="input-field" type="text" id="ip-input" placeholder="192.168.1.1 or 8.8.8.8" />
+          <button class="btn-analyze" id="ip-btn" onclick="runAnalysis('ip')">
+            <span class="btn-text">Analyze</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="tab-logs" class="tab-panel">
+        <div class="input-row">
+          <textarea class="input-field" id="logs-input" placeholder="Paste Syslog / auth.log, Nginx/Apache access log, JSON/NDJSON events, or PowerShell/Windows event text..."></textarea>
+          <button class="btn-analyze" id="logs-btn" onclick="runForensics('logs')">
+            <span class="btn-text">Analyze</span>
+          </button>
+        </div>
+        <div class="file-row">
+          <label class="file-pick">📎 Upload log file (max 4 MB)
+            <input type="file" id="logs-file" accept=".log,.txt,.json,.ndjson,.csv" hidden onchange="runForensics('logs')">
+          </label>
+          <span class="file-hint">Detects SQLi, XSS, path traversal, command injection, brute force, encoded PowerShell, download cradles.</span>
+        </div>
+      </div>
+
+      <div id="tab-network" class="tab-panel">
+        <div class="input-row">
+          <textarea class="input-field" id="network-input" placeholder="Paste Nmap output (-oN / -oG) or a Wireshark/tshark text or CSV export..."></textarea>
+          <button class="btn-analyze" id="network-btn" onclick="runForensics('network')">
+            <span class="btn-text">Analyze</span>
+          </button>
+        </div>
+        <div class="file-row">
+          <label class="file-pick">📎 Upload scan / capture export
+            <input type="file" id="network-file" accept=".txt,.nmap,.gnmap,.csv,.log" hidden onchange="runForensics('network')">
+          </label>
+          <span class="file-hint">Flags risky ports, vulnerable banners, port scans, cleartext creds, DNS tunnelling.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis Pipeline -->
+    <div class="pipeline-bar" id="js-pipeline">
+      <div class="pipeline-steps" id="js-pipeline-steps"></div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-area" id="js-results">
+      <div class="empty-state">
+        <div class="empty-icon"></div>
+        <div class="empty-title">No active analysis</div>
+        <div class="empty-sub">Submit a URL, email, hash, IP address, log or network artifact to begin threat analysis.</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ─── RIGHT PANEL ──────────────────────────────────── -->
+  <aside class="right-panel">
+
+    <div class="panel-section">
+      <div class="panel-title"> Statistics</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="js-stat-total">0</div>
+          <div class="stat-label">Total Scans</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num red" id="js-stat-malicious">0</div>
+          <div class="stat-label">Malicious</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num yellow" id="js-stat-suspicious">0</div>
+          <div class="stat-label">Suspicious</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num green" id="js-stat-benign">0</div>
+          <div class="stat-label">Benign</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-section activity-section" id="js-activity-section">
+      <div class="activity-header">
+        <button type="button" class="activity-toggle" id="js-activity-toggle" onclick="toggleActivityPanel()" aria-expanded="true" aria-controls="js-activity-body">
+          <span class="activity-chevron">▾</span>
+          <span class="panel-title" style="margin-bottom:0;"> Live Activity</span>
+          <span class="activity-count" id="js-activity-count">0</span>
+        </button>
+        <button type="button" class="activity-clear" onclick="clearActivity()" title="Clear activity">Clear</button>
+      </div>
+      <div class="activity-body" id="js-activity-body">
+        <div class="activity-filters" role="group" aria-label="Filter activity">
+          <button type="button" class="activity-chip active" data-filter="all" onclick="setActivityFilter('all')">All</button>
+          <button type="button" class="activity-chip" data-filter="malicious" onclick="setActivityFilter('malicious')">Malicious</button>
+          <button type="button" class="activity-chip" data-filter="suspicious" onclick="setActivityFilter('suspicious')">Suspicious</button>
+          <button type="button" class="activity-chip" data-filter="error" onclick="setActivityFilter('error')">Errors</button>
+        </div>
+        <div class="activity-feed" id="js-activity-feed" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="panel-section" style="border-top:1px solid var(--border);">
+      <div class="panel-title"> Analyst Tools</div>
+
+      <div class="tool-group">
+        <div class="tool-label">Decode / Deobfuscate</div>
+        <input class="tool-input" id="decode-input" type="text" placeholder="Base64, Hex, URL-encoded...">
+        <button class="btn-tool" onclick="runTool('decode')">Decode</button>
+        <div class="tool-result" id="decode-result"></div>
+      </div>
+
+      <div class="tool-group">
+        <div class="tool-label">IOC Extractor</div>
+        <textarea class="tool-input" id="extract-input" placeholder="Paste raw text..." style="height:50px;resize:none;"></textarea>
+        <button class="btn-tool" onclick="runTool('extract')">Extract IOCs</button>
+        <div class="tool-result" id="extract-result"></div>
+      </div>
+
+      <div class="tool-group">
+        <div class="tool-label">Hash Lookup (common passwords)</div>
+        <input class="tool-input" id="hashcrack-input" type="text" placeholder="MD5 / SHA-1 / SHA-256 hash...">
+        <button class="btn-tool" onclick="runTool('hashcrack')">Lookup</button>
+        <div class="tool-result" id="hashcrack-result"></div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<div id="toast"></div>
+
+<script src="/static/script.js"></script>
+<script src="/static/highlight.js"></script>
+<script src="/static/forensics.js"></script>
+<script src="/static/mitre.js"></script>
+<script src="/static/insights.js"></script>
+<script src="/static/sigma.js"></script>
+<script src="/static/report.js"></script>
+<script src="/static/visualmap.js"></script>
+<script src="/static/details.js"></script>
+<script src="/static/defang.js"></script>
+</body>
+</html>

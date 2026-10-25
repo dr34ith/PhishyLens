@@ -1,0 +1,20 @@
+From: "PayPal Support" <support@paypa1-secure.xyz>
+Return-Path: <bounce@mailer.badhost.ru>
+Reply-To: help@gmail-support.top
+X-Originating-IP: [185.220.101.4]
+Received: from mail.badhost.ru (mail.badhost.ru [185.220.101.4]) by mx.example.com; Fri, 2 Oct 2026 08:00:00 +0000
+Authentication-Results: mx.example.com; spf=fail smtp.mailfrom=badhost.ru; dkim=none; dmarc=fail
+Subject: URGENT: verify your account
+Content-Type: multipart/mixed; boundary=B
+
+--B
+Content-Type: text/html
+
+<a href="http://paypa1-secure.xyz/login">https://paypal.com/secure</a> Act immediately or your account will be suspended.
+--B
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="invoice.pdf.exe"
+Content-Transfer-Encoding: base64
+
+TVqQAAMAAAAEAAAA
+--B--

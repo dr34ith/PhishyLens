@@ -1,0 +1,24 @@
+Starting Nmap 7.94 ( https://nmap.org ) at 2026-10-03 09:30 +08
+Nmap scan report for target.local (10.10.10.5)
+Host is up (0.0021s latency).
+PORT     STATE SERVICE     VERSION
+21/tcp   open  ftp         vsftpd 2.3.4
+|_ftp-anon: Anonymous FTP login allowed (FTP code 230)
+22/tcp   open  ssh         OpenSSH 4.7p1 Debian 8ubuntu1 (protocol 2.0)
+23/tcp   open  telnet      Linux telnetd
+80/tcp   open  http        Apache httpd 2.2.8 ((Ubuntu) DAV/2)
+139/tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp  open  netbios-ssn Samba smbd 3.0.20-Debian (workgroup: WORKGROUP)
+3306/tcp open  mysql       MySQL 5.0.51a-3ubuntu5
+3389/tcp open  ms-wbt-server Microsoft Terminal Services
+4444/tcp open  krb524?
+6379/tcp open  redis       Redis key-value store
+OS details: Linux 2.6.9 - 2.6.33
+
+Nmap scan report for 10.10.10.20
+Host is up (0.0030s latency).
+PORT    STATE SERVICE VERSION
+80/tcp  open  http    nginx 1.24.0
+443/tcp open  ssl/http nginx 1.24.0
+
+Nmap done: 2 IP addresses (2 hosts up) scanned in 14.21 seconds
